@@ -5,19 +5,12 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
-
-permissions:
-  contents: write
 
 jobs:
   register-dataset:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+      - uses: actions/checkout@v3
       - name: Install Dependencies
         run: pip install -r requirements.txt
       - name: Upload Dataset to Hugging Face Hub
@@ -30,10 +23,7 @@ jobs:
     needs: register-dataset
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+      - uses: actions/checkout@v3
       - name: Install Dependencies
         run: pip install -r requirements.txt
       - name: Run Data Preparation
@@ -41,7 +31,7 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: python tourism_project/model_building/prep.py
       - name: Upload Prepared Data Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: data_splits
           path: |
@@ -50,18 +40,15 @@ jobs:
             ytrain.csv
             ytest.csv
 
-  model-training:
+  model-traning:
     needs: data-prep
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+      - uses: actions/checkout@v3
       - name: Install Dependencies
         run: pip install -r requirements.txt
       - name: Download Prepared Data Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: data_splits
       - name: Start MLflow Server
@@ -73,20 +60,20 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: python tourism_project/model_building/train.py
       - name: Upload Model Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: trained_model
           path: tourism_project/deployment/best_model.joblib
 
   deploy-hosting:
     runs-on: ubuntu-latest
-    needs: [model-training, data-prep, register-dataset]
+    needs: [model-traning, data-prep, register-dataset]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       - name: Install Dependencies
         run: pip install -r tourism_project/deployment/requirements.txt huggingface_hub
       - name: Download Model Artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: trained_model
           path: tourism_project/deployment/
