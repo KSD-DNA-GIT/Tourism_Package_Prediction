@@ -17,8 +17,7 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          huggingface-cli login --token $HF_TOKEN
-          huggingface-cli upload ${{ secrets.HF_USERNAME }}/Wellness-Tourism-Data tourism_project/data/tourism.csv tourism.csv --repo-type dataset
+          hf upload ${{ secrets.HF_USERNAME }}/Wellness-Tourism-Data tourism_project/data/tourism.csv tourism.csv --repo-type dataset
 
   data-prep:
     needs: register-dataset
@@ -82,5 +81,4 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          huggingface-cli login --token $HF_TOKEN
-          huggingface-cli upload ${{ secrets.HF_USERNAME }}/Wellness-Tourism-App tourism_project/deployment . --repo-type space
+          hf upload ${{ secrets.HF_USERNAME }}/Wellness-Tourism-App tourism_project/deployment . --repo-type space
